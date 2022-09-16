@@ -27,7 +27,12 @@ for name in "${packages[@]}"; do
                 sudo apt-get install "$name"
             fi
             else
-                # TODO: tar file or download via source
+                # TODO: tar/deb file download via source
+                # 1. Decide source's repo (Mantain all sources list).
+                # 2. Download tar/deb
+                # 3. For tar - verify sha & extract to /opt (unique folder)
+                # 4. For deb - install via dpkg command
+                # 5. For tar - set executable PATH in environment with desktop shortcut (shortcut command??).
                 echo "Package not found via apt-search."
         fi
         else
