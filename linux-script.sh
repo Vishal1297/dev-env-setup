@@ -123,7 +123,11 @@ install_tar() {
     # Extract to /opt/<package-name>
     echo "Extracting $pkg to $install_dir..."
     mkdir -p "$install_dir"
-    tar -xzf "$tar_file" -C "$install_dir" --strip-components=1
+    if ! tar -xzf "$tar_file" -C "$install_dir" --strip-components=1; then
+        echo "Error: Failed to extract $pkg."
+        rm -f "$tar_file"
+        return 1
+    fi
 
     rm -f "$tar_file"
 
@@ -164,6 +168,7 @@ EOF
         echo "$pkg installed successfully."
     else
         echo "Warning: $pkg extracted to $install_dir but binary may not be on PATH."
+        return 1
     fi
 }
 

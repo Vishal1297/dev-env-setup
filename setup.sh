@@ -13,12 +13,6 @@ echo "
 
 # Show Manual on new page
 
-# Check if user is root
-if [ "$(id -u)" != "0" ]; then
-    echo "Error: You must be root to run this script, please use the root user to install the software."
-    exit 1
-fi
-
 # Ask user to select the OS
 echo "
 ###############################################################################
@@ -45,36 +39,39 @@ read -p "Select your OS: " os
 
 if [ "$os" == "1" ]; then
     # Check if os is linux
-    if [[ "$os_type" == "linux" ]]; then
-        echo "
+    if [[ "$os_type" != "linux" ]]; then
+        echo "Error: You selected Linux but this system is not Linux."
+        exit 1
+    fi
+    # Check if user is root (required for Linux package installation)
+    if [ "$(id -u)" != "0" ]; then
+        echo "Error: You must be root to run this script, please use the root user to install the software."
+        exit 1
+    fi
+    echo "
 ###############################################################################
 #                                                                             #
 #                               Linux Setup                                   #
 #                                                                             #
 ###############################################################################
 "
-        # Load variables
-        source "$SCRIPT_DIR/linux-script.sh"
-    else
-        echo "Error: You selected Linux but this system is not Linux."
-        exit 1
-    fi
+    # Load variables
+    source "$SCRIPT_DIR/linux-script.sh"
 elif [ "$os" == "2" ]; then
     # Check if os is windows
-    if [[ "$os_type" == "windows" ]]; then
-        echo "
+    if [[ "$os_type" != "windows" ]]; then
+        echo "Error: You selected Windows but this system is not Windows."
+        exit 1
+    fi
+    echo "
 ###############################################################################
 #                                                                             #
 #                               Windows Setup                                 #
 #                                                                             #
 ###############################################################################
 "
-        # Load variables
-        source "$SCRIPT_DIR/windows-script.sh"
-    else
-        echo "Error: You selected Windows but this system is not Windows."
-        exit 1
-    fi
+    # Load variables
+    source "$SCRIPT_DIR/windows-script.sh"
 else
     echo "Error: Invalid input"
     exit 1
