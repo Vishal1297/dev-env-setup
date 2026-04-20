@@ -11,7 +11,11 @@ echo "
 ###############################################################################
 "
 
-# Show Manual on new page
+# Show manual if manual.md exists
+if [ -f "$SCRIPT_DIR/manual.md" ]; then
+    echo "Showing manual (press q to continue)..."
+    less "$SCRIPT_DIR/manual.md" 2>/dev/null || cat "$SCRIPT_DIR/manual.md"
+fi
 
 # Ask user to select the OS
 echo "
