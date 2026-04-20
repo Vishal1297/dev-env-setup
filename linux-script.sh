@@ -11,6 +11,36 @@
 # This is a list of packages to install.
 
 packages=(git gitk vim sublime-text brave chromium chrome intellij-toolbox code Postman mongodb)
+
+# Map package names to their actual binary names on PATH.
+# Packages without a standard binary will fall back to dpkg-query.
+declare -A bin_names=(
+    [sublime-text]="subl"
+    [brave]="brave-browser"
+    [chromium]="chromium-browser"
+    [chrome]="google-chrome"
+    [intellij-toolbox]=""
+    [Postman]="postman"
+    [mongodb]="mongod"
+)
+
+# Check if a package is installed by looking for its binary or querying dpkg.
+is_installed() {
+    local pkg="$1"
+    local bin="${bin_names[$pkg]:-$pkg}"
+
+    if [ -n "$bin" ] && command -v "$bin" &>/dev/null; then
+        return 0
+    fi
+
+    # Fallback: check if the apt package is installed via dpkg
+    if dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null | grep -q "install ok installed"; then
+        return 0
+    fi
+
+    return 1
+}
+
 echo "Installing packages..."
 
 # The script will install these packages.
@@ -18,14 +48,13 @@ echo "Installing packages..."
 
 for name in "${packages[@]}"; do
     echo "Installing $name..."
-    if [ ! -x "$(command -v "$name")" ]; then
+    if ! is_installed "$name"; then
         echo "Package $name is not installed. Do you want to install it? (y/n)"
         read -r answer
         if [ "$answer" == "y" ]; then
             search_result=$(sudo apt-cache search --names-only "$name" | wc -l)
             if [ "$search_result" -gt 0 ]; then
                 sudo apt-get install "$name"
-            fi
             else
                 # TODO: tar/deb file download via source
                 # 1. Decide source's repo (Mantain all sources list).
@@ -34,8 +63,11 @@ for name in "${packages[@]}"; do
                 # 4. For deb - install via dpkg command
                 # 5. For tar - set executable PATH in environment with desktop shortcut (shortcut command??).
                 echo "Package not found via apt-search."
-        fi
+            fi
         else
-            echo "Package $name is already installed."
+            echo "Skipping $name."
+        fi
+    else
+        echo "Package $name is already installed."
     fi
 done
