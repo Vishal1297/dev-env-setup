@@ -1,5 +1,7 @@
 #!/bin/bash
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
 # Create Menu
 echo "
 ###############################################################################
@@ -12,7 +14,7 @@ echo "
 # Show Manual on new page
 
 # Check if user is root
-if [ $(id -u) != "0" ]; then
+if [ "$(id -u)" != "0" ]; then
     echo "Error: You must be root to run this script, please use the root user to install the software."
     exit 1
 fi
@@ -52,7 +54,7 @@ if [ "$os" == "1" ]; then
 ###############################################################################
 "
         # Load variables
-        source ./linux-script.sh
+        source "$SCRIPT_DIR/linux-script.sh"
     else
         echo "Error: You selected Linux but this system is not Linux."
         exit 1
@@ -68,7 +70,7 @@ elif [ "$os" == "2" ]; then
 ###############################################################################
 "
         # Load variables
-        source ./windows-script.sh
+        source "$SCRIPT_DIR/windows-script.sh"
     else
         echo "Error: You selected Windows but this system is not Windows."
         exit 1

@@ -74,9 +74,9 @@ install_deb() {
     fi
 
     echo "Installing $pkg via dpkg..."
-    if ! sudo dpkg -i "$deb_file"; then
+    if ! dpkg -i "$deb_file"; then
         echo "Fixing missing dependencies for $pkg..."
-        sudo apt-get install -f -y
+        apt-get install -f -y
     fi
 
     rm -f "$deb_file"
@@ -122,8 +122,8 @@ install_tar() {
 
     # Extract to /opt/<package-name>
     echo "Extracting $pkg to $install_dir..."
-    sudo mkdir -p "$install_dir"
-    sudo tar -xzf "$tar_file" -C "$install_dir" --strip-components=1
+    mkdir -p "$install_dir"
+    tar -xzf "$tar_file" -C "$install_dir" --strip-components=1
 
     rm -f "$tar_file"
 
@@ -133,7 +133,7 @@ install_tar() {
         local bin_path
         bin_path=$(find "$install_dir" -maxdepth 2 -name "$bin" -type f | head -1)
         if [ -n "$bin_path" ]; then
-            sudo ln -sf "$bin_path" "/usr/local/bin/${bin}"
+            ln -sf "$bin_path" "/usr/local/bin/${bin}"
             echo "Symlinked $bin to /usr/local/bin/${bin}."
         fi
     fi
@@ -142,17 +142,22 @@ install_tar() {
     local desktop_file="/usr/share/applications/${pkg}.desktop"
     local bin_for_exec="${bin_names[$pkg]:-$pkg}"
     if [ -n "$bin_for_exec" ]; then
+        # Try to find an icon in the install directory
+        local icon_path
+        icon_path=$(find "$install_dir" -maxdepth 3 \( -name "*.png" -o -name "*.svg" \) -type f | head -1)
+        icon_path="${icon_path:-${install_dir}/${pkg}.png}"
+
         echo "Creating desktop shortcut for $pkg..."
-        sudo tee "$desktop_file" > /dev/null <<EOF
+        tee "$desktop_file" > /dev/null <<EOF
 [Desktop Entry]
 Type=Application
 Name=$pkg
 Exec=/usr/local/bin/${bin_for_exec}
-Icon=${install_dir}/${pkg}.png
+Icon=${icon_path}
 Terminal=false
 Categories=Development;
 EOF
-        sudo chmod 644 "$desktop_file"
+        chmod 644 "$desktop_file"
     fi
 
     if is_installed "$pkg"; then
@@ -203,9 +208,11 @@ for name in "${packages[@]}"; do
         echo "Package $name is not installed. Do you want to install it? (y/n)"
         read -r answer
         if [ "$answer" == "y" ]; then
-            search_result=$(sudo apt-cache search --names-only "$name" | wc -l)
-            if [ "$search_result" -gt 0 ]; then
-                sudo apt-get install -y "$name"
+            if apt-cache show "$name" &>/dev/null; then
+                if ! apt-get install -y "$name"; then
+                    echo "apt-get install failed for $name. Attempting manual install..."
+                    install_from_source "$name"
+                fi
             else
                 echo "Package $name not found in apt. Attempting manual install..."
                 install_from_source "$name"
