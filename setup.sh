@@ -31,16 +31,19 @@ echo "
 2) Windows
 "
 
+# Detect OS type
+case "$(uname -s)" in
+    Linux*)  os_type="linux";;
+    MINGW*|MSYS*|CYGWIN*) os_type="windows";;
+    *)       os_type="unknown";;
+esac
+
 # Take user input
 read -p "Select your OS: " os
 
-echo $os
-echo $os_type
-echo [[$os_type -eq "linux"]]
-
 if [ "$os" == "1" ]; then
     # Check if os is linux
-    if [[ $os_type -eq "linux" ]]; then
+    if [[ "$os_type" == "linux" ]]; then
         echo "
 ###############################################################################
 #                                                                             #
@@ -50,10 +53,13 @@ if [ "$os" == "1" ]; then
 "
         # Load variables
         source ./linux-script.sh
+    else
+        echo "Error: You selected Linux but this system is not Linux."
+        exit 1
     fi
-elif [ $os == "2" ]; then
+elif [ "$os" == "2" ]; then
     # Check if os is windows
-    if [[ $os_type == "windows" ]]; then
+    if [[ "$os_type" == "windows" ]]; then
         echo "
 ###############################################################################
 #                                                                             #
@@ -63,7 +69,9 @@ elif [ $os == "2" ]; then
 "
         # Load variables
         source ./windows-script.sh
-
+    else
+        echo "Error: You selected Windows but this system is not Windows."
+        exit 1
     fi
 else
     echo "Error: Invalid input"
