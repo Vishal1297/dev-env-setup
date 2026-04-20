@@ -221,14 +221,18 @@ for name in "${packages[@]}"; do
         echo "Package $name is not installed. Do you want to install it? (y/n)"
         read -r answer
         if [ "$answer" == "y" ]; then
-            if apt-cache show "$name" &>/dev/null; then
+            if [ -n "${package_sources[$name]}" ]; then
+                # Package has a known direct-download source — use it to
+                # avoid installing the wrong apt package (e.g. an old
+                # transitional 'mongodb' instead of mongodb-org-server 7.0).
+                install_from_source "$name"
+            elif apt-cache show "$name" &>/dev/null; then
                 if ! apt-get install -y "$name"; then
                     echo "apt-get install failed for $name. Attempting manual install..."
                     install_from_source "$name"
                 fi
             else
-                echo "Package $name not found in apt. Attempting manual install..."
-                install_from_source "$name"
+                echo "Package $name not found in apt and no manual source configured."
             fi
         else
             echo "Skipping $name."
