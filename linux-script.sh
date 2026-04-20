@@ -10,14 +10,15 @@
 # Packages to install
 # This is a list of packages to install.
 
-packages=(git gitk vim sublime-text brave chromium chrome intellij-toolbox code Postman mongodb)
+# Note: chromium is excluded — on modern Ubuntu it is snap-only and has no
+# stable .deb download URL. Use 'snap install chromium' separately if needed.
+packages=(git gitk vim sublime-text brave chrome intellij-toolbox code Postman mongodb)
 
 # Map package names to their actual binary names on PATH.
 # Packages without a standard binary will fall back to dpkg-query.
 declare -A bin_names=(
     [sublime-text]="subl"
     [brave]="brave-browser"
-    [chromium]="chromium-browser"
     [chrome]="google-chrome"
     [intellij-toolbox]="jetbrains-toolbox"
     [Postman]="Postman"
