@@ -20,7 +20,7 @@ declare -A bin_names=(
     [chromium]="chromium-browser"
     [chrome]="google-chrome"
     [intellij-toolbox]="jetbrains-toolbox"
-    [Postman]="postman"
+    [Postman]="Postman"
     [mongodb]="mongod"
 )
 
@@ -49,7 +49,7 @@ DOWNLOAD_DIR="/tmp/dev-env-setup"
 # Check if a package is installed by looking for its binary or querying dpkg.
 is_installed() {
     local pkg="$1"
-    local bin="${bin_names[$pkg]-$pkg}"
+    local bin="${bin_names[$pkg]:-$pkg}"
 
     if [ -n "$bin" ] && command -v "$bin" &>/dev/null; then
         return 0
@@ -135,19 +135,21 @@ install_tar() {
 
     # Symlink the binary to /usr/local/bin if a known binary name exists
     local bin="${bin_names[$pkg]}"
+    local symlink_created=false
     if [ -n "$bin" ]; then
         local bin_path
         bin_path=$(find "$install_dir" -maxdepth 2 -name "$bin" -type f | head -1)
         if [ -n "$bin_path" ]; then
             ln -sf "$bin_path" "/usr/local/bin/${bin}"
             echo "Symlinked $bin to /usr/local/bin/${bin}."
+            symlink_created=true
         fi
     fi
 
-    # Create a .desktop file for GUI applications
-    local desktop_file="/usr/share/applications/${pkg}.desktop"
-    local bin_for_exec="${bin_names[$pkg]:-$pkg}"
-    if [ -n "$bin_for_exec" ]; then
+    # Create a .desktop file for GUI applications only if symlink was created
+    if [ "$symlink_created" = true ]; then
+        local desktop_file="/usr/share/applications/${pkg}.desktop"
+        local bin_for_exec="${bin_names[$pkg]:-$pkg}"
         # Try to find an icon in the install directory
         local icon_path
         icon_path=$(find "$install_dir" -maxdepth 3 \( -name "*.png" -o -name "*.svg" \) -type f | head -1)
@@ -170,6 +172,8 @@ EOF
         echo "$pkg installed successfully."
     else
         echo "Warning: $pkg extracted to $install_dir but binary may not be on PATH."
+        # Clean up broken install artifacts
+        rm -f "/usr/share/applications/${pkg}.desktop"
         return 1
     fi
 }
@@ -203,6 +207,9 @@ install_from_source() {
             ;;
     esac
 }
+
+echo "Updating package lists..."
+apt-get update -y
 
 echo "Installing packages..."
 
