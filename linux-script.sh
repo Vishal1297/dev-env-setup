@@ -178,6 +178,7 @@ EOF
             rm -f "/usr/local/bin/${bin}"
         fi
         rm -f "/usr/share/applications/${pkg}.desktop"
+        rm -rf "$install_dir"
         return 1
     fi
 }
