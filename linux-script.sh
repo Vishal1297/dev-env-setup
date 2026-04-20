@@ -174,10 +174,6 @@ EOF
     else
         echo "Warning: $pkg extracted to $install_dir but binary may not be on PATH."
         # Clean up broken install artifacts
-        if [ -n "$bin" ]; then
-            rm -f "/usr/local/bin/${bin}"
-        echo "Warning: $pkg extracted to $install_dir but binary may not be on PATH."
-        # Clean up broken install artifacts
         local bin_cleanup="${bin_names[$pkg]}"
         if [ -n "$bin_cleanup" ]; then
             rm -f "/usr/local/bin/${bin_cleanup}"
