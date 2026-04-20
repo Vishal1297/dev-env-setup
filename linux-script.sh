@@ -45,7 +45,7 @@ declare -A package_checksums=(
     [Postman]=""
 )
 
-DOWNLOAD_DIR="/tmp/dev-env-setup"
+DOWNLOAD_DIR="$(mktemp -d /tmp/dev-env-setup.XXXXXXXXXX)"
 
 # Check if a package is installed by looking for its binary or querying dpkg.
 is_installed() {
@@ -192,8 +192,6 @@ install_from_source() {
 
     local type="${source_entry%%|*}"
     local url="${source_entry#*|}"
-
-    mkdir -p "$DOWNLOAD_DIR"
 
     case "$type" in
         deb)
