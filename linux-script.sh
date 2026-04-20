@@ -33,6 +33,8 @@ declare -A package_sources=(
     [chrome]="deb|https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
     [intellij-toolbox]="tar|https://download.jetbrains.com/toolbox/jetbrains-toolbox-2.1.3.18901.tar.gz"
     [Postman]="tar|https://dl.pstmn.io/download/latest/linux_64"
+    [code]="deb|https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64"
+    [mongodb]="deb|https://repo.mongodb.org/apt/ubuntu/dists/jammy/mongodb-org/7.0/multiverse/binary-amd64/mongodb-org-server_7.0.20_amd64.deb"
 )
 
 # Map package names to expected sha256 checksums for tar downloads.
