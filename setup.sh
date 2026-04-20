@@ -38,7 +38,7 @@ echo $os
 echo $os_type
 echo [[$os_type -eq "linux"]]
 
-if [ $os == "1" ]; then
+if [ "$os" == "1" ]; then
     # Check if os is linux
     if [[ $os_type -eq "linux" ]]; then
         echo "
@@ -53,7 +53,7 @@ if [ $os == "1" ]; then
     fi
 elif [ $os == "2" ]; then
     # Check if os is windows
-    if [[ $os_type -eq "windows" ]]; then
+    if [[ $os_type == "windows" ]]; then
         echo "
 ###############################################################################
 #                                                                             #

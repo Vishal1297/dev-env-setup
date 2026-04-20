@@ -22,7 +22,7 @@ for name in "${packages[@]}"; do
         echo "Package $name is not installed. Do you want to install it? (y/n)"
         read -r answer
         if [ "$answer" == "y" ]; then
-            search_result=$(sudo apt-cache search --names-only "$name" || wc -l)
+            search_result=$(sudo apt-cache search --names-only "$name" | wc -l)
             if [ "$search_result" -gt 0 ]; then
                 sudo apt-get install "$name"
             fi
