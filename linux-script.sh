@@ -19,7 +19,7 @@ declare -A bin_names=(
     [brave]="brave-browser"
     [chromium]="chromium-browser"
     [chrome]="google-chrome"
-    [intellij-toolbox]=""
+    [intellij-toolbox]="jetbrains-toolbox"
     [Postman]="postman"
     [mongodb]="mongod"
 )
