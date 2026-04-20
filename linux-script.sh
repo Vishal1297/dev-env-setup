@@ -174,11 +174,12 @@ EOF
     else
         echo "Warning: $pkg extracted to $install_dir but binary may not be on PATH."
         # Clean up broken install artifacts
-        local bin_cleanup="${bin_names[$pkg]}"
-        if [ -n "$bin_cleanup" ]; then
-            rm -f "/usr/local/bin/${bin_cleanup}"
+        if [ -n "$bin" ]; then
+            rm -f "/usr/local/bin/${bin}"
         fi
         rm -f "/usr/share/applications/${pkg}.desktop"
+        rm -rf "$install_dir"
+        return 1
     fi
 }
 
