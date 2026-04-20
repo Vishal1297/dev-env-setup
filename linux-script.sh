@@ -47,7 +47,7 @@ DOWNLOAD_DIR="/tmp/dev-env-setup"
 # Check if a package is installed by looking for its binary or querying dpkg.
 is_installed() {
     local pkg="$1"
-    local bin="${bin_names[$pkg]:-$pkg}"
+    local bin="${bin_names[$pkg]-$pkg}"
 
     if [ -n "$bin" ] && command -v "$bin" &>/dev/null; then
         return 0
